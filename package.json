@@ -1,0 +1,24 @@
+{
+  "name": "registration-service",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "ignatenko.exceedteam@gmail.com",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "nodemon": "^2.0.12",
+    "jsonwebtoken": "^8.5.1",
+    "body-parser": "^1.19.0",
+    "bcryptjs": "^2.4.3",
+    "express": "^4.17.1"
+  },
+  "devDependencies": {
+    "express-validator": "^6.12.1"
+  }
+}
