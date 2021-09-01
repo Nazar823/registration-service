@@ -5,13 +5,14 @@ const cors = require ('cors')
 const {
     registration,
     login,
-    registrationSQL,
-    testConnection
+    testConnection,
+    registrationSeq, registrationSQL, loginSeq
 } =  require('../Controllers/authController')
 
 router.post('/api/registration', registration)
-router.post('/api/login', login)
+router.post('/api/login', loginSeq)
 router.post('/api/SQL', registrationSQL)
+router.post('/api/reg', registrationSeq)
 router.post('/api/test', testConnection)
 
 module.exports = router

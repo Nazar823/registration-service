@@ -1,35 +1,82 @@
-const User = require('../Objects/User')
 const bcrypt = require('bcryptjs')
 const {use} = require("express/lib/router");
 const jwt = require("jsonwebtoken");
-const {Client} = require('pg')
-const {Sequelize} = require('sequelize')
+const {Client} = require("pg")
+const {Sequelize, DataTypes, Model} = require('sequelize')
 
 //*********Sequelize*********
-module.exports.testConnection = async (req, res, next) => {
+
+module.exports.registrationSeq = async (req, res, next) => {
     try {
-        const sequelize = new Sequelize(
-            'users_auth', 'nazar', 'ignatenko123', {
-                host: 'localhost',
-                dialect: "postgres"
-            }
-        )
-        let mess;
-        try {
-            await sequelize.authenticate();
-            mess = 'подключение успешно'
-            console.log(mess)
-        } catch (e){
-            mess = 'ошибка'
-            console.log(mess)
+        console.log('Запрос принят (Seq)')
+        const sequelize = new Sequelize('users_auth', 'nazar', 'ignatenko123', {
+            dialect: "postgres",
+            host: 'localhost'
+        })
+        const newUser = require('../../models/user')(sequelize)
+        module.exports = {
+            sequelize: sequelize,
+            user: newUser
         }
-        return res.status(200).json({message: mess})
-    } catch (e){
-        return next(e)
+        const {mail, password, name} = req.body
+        if(mail == "" || password == "" || name == ""){
+            return req.status(400).json({message: "Проверьте правильность заполнения полей!"})
+        }
+        newUser.create({
+            mail: mail,
+            name: name,
+            password: bcrypt.hashSync(password, 8)
+        }).then(() => {
+            return res.status(200).json({message: "Запрос успешен"})
+        }).catch(() => {
+            return res.status(400).json({message: "Поле не уникальное"})
+        })
+
+    } catch (e) {
+        console.log(e.message)
+        return res.status(400).json({message: e.message})
     }
 }
 
-//*********VANILLA POSTGRES*********
+module.exports.loginSeq = async (req, res, next) => {
+    try {
+        console.log('Запрос принят (Seq)')
+        const sequelize = new Sequelize('users_auth', 'nazar', 'ignatenko123', {
+            dialect: "postgres",
+            host: 'localhost'
+        })
+        const newUser = require('../../models/user')(sequelize)
+        module.exports = {
+            sequelize: sequelize,
+            user: newUser
+        }
+        const {mail, password} = req.body
+        await newUser.findAll({
+            attributes: ['password', 'id'],
+            where: {
+                mail: mail
+            }
+        }).then(() => {
+            console.log('Вы отправили пароль: ',password)
+            console.log('Хэш этого пароля: ', bcrypt.compareSync(password, 8))
+            console.log('Хэш верного пароля: ', newUser.password)
+            if (newUser.password !== bcrypt.hashSync(password, 8)){
+                return res.status(400).json({message: "Пароль неправильный"})
+            }
+            return res.status(200).json({token: getToken(newUser.id)})
+        }).catch(() => {
+            return res.status(400).json({message: "Пользователь не найден"})
+        })
+    } catch (e){
+        console.log(e.message)
+        return res.status(400).json({message: e.message})
+    }
+}
+
+//!*********End  Sequelize*********
+
+
+//!*********VANILLA POSTGRES*********
 module.exports.registrationSQL = async (req, res, next) => {
     try {
         console.log('Запрос принят')
@@ -43,7 +90,7 @@ module.exports.registrationSQL = async (req, res, next) => {
         client.connect()
         const queryString = 'INSERT INTO users VALUES (DEFAULT, \'sample.adress@mail.ru\', \'Sample Name\', \'MyPasswordHere\')'
         client.query(queryString, (err, res) => {
-            console.log(err, res)
+            console.log('Err: ', err, "\nInserted")
             client.end()
         })
         return res.status(200).json({message: 'Регистрация успешна!'})
@@ -52,7 +99,15 @@ module.exports.registrationSQL = async (req, res, next) => {
     }
 }
 
-//*********MONGO*********
+module.exports.testConnection = async (req, res, next) => {
+    try {
+        return res.status(200).json({message: 'Working!'})
+    } catch (e) {
+        return next(e)
+    }
+}
+
+//!*********MONGO*********
 module.exports.registration = async (req, res, next) => {
     try {
         console.log('запрос получен')
@@ -76,7 +131,7 @@ function getToken(id) {
         {expiresIn: "15h"})
 }
 
-//*********MONGO*********
+//!*********MONGO*********
 module.exports.login = async (req, res, next) => {
     try {
         const {username, password} = req.body
