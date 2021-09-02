@@ -1,4 +1,4 @@
-// import {validator} from "validator";
+const validator = require('validator');
 const bcrypt = require('bcryptjs')
 const jwt = require("jsonwebtoken");
 const {Sequelize, DataTypes, Model} = require('sequelize')
@@ -20,6 +20,11 @@ module.exports.registration = async (req, res, next) => {
             return req.status(400).json({message: "Проверьте правильность заполнения полей!"})
         }
         //Вставить валидатор
+        if (!validator.isEmail(mail)){
+            return res.status(400).json({message: 'Почта не валидна!'})
+        }
+        console.log("mail:", mail)
+        console.log(validator.isEmail(mail))
         newUser.create({
             mail: mail,
             name: name,
@@ -48,8 +53,11 @@ module.exports.login = async (req, res, next) => {
         }
         const {mail, password} = req.headers
         //Вставить валидатор
-        // console.log(validateMail(mail))
-        //*******
+        if (!validator.isEmail(mail)){
+            return res.status(400).json({message: 'Почта не валидна!'})
+        }
+        console.log("mail:", mail)
+        console.log(validator.isEmail(mail))
         const user = await newUser.findOne({
             attributes: ['id', 'password'],
             where: {
