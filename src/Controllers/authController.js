@@ -62,7 +62,6 @@ module.exports.loginSeq = async (req, res, next) => {
             return res.status(400).json({message: "Пароль неправильный"})
         }
         return res.status(200).json({token: getToken(newUser.id)})
-        return res.status(400).json({message: "Пользователь не найден"})
     } catch (e){
         console.log(e.message)
         return res.status(400).json({message: e.message})
