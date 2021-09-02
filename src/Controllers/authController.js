@@ -23,8 +23,6 @@ module.exports.registration = async (req, res, next) => {
         if (!validator.isEmail(mail)){
             return res.status(400).json({message: 'Почта не валидна!'})
         }
-        console.log("mail:", mail)
-        console.log(validator.isEmail(mail))
         newUser.create({
             mail: mail,
             name: name,
@@ -56,8 +54,6 @@ module.exports.login = async (req, res, next) => {
         if (!validator.isEmail(mail)){
             return res.status(400).json({message: 'Почта не валидна!'})
         }
-        console.log("mail:", mail)
-        console.log(validator.isEmail(mail))
         const user = await newUser.findOne({
             attributes: ['id', 'password'],
             where: {
