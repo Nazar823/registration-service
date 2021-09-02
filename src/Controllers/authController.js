@@ -61,7 +61,7 @@ module.exports.loginSeq = async (req, res, next) => {
         if (!bcrypt.compareSync(password, user.password)){
             return res.status(400).json({message: "Пароль неправильный"})
         }
-        return res.status(200).json({token: getToken(newUser.id)})
+        return res.status(200).json({token: getToken(user.id)})
     } catch (e){
         console.log(e.message)
         return res.status(400).json({message: e.message})

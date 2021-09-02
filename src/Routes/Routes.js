@@ -1,7 +1,5 @@
 const Router = require('express')
 const router = new Router
-// const authMiddleware = require('../middleware/authMiddleware');
-const cors = require ('cors')
 const {
     registrationSeq, loginSeq
 } =  require('../Controllers/authController')

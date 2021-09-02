@@ -1,5 +1,4 @@
 const jwt = require("jsonwebtoken");
-const {body} = require("express-validator");
 
 module.exports = function (req, res, next) {
     if(req.method === "OPTIONS"){
