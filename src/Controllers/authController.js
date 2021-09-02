@@ -15,7 +15,7 @@ module.exports.registration = async (req, res, next) => {
             sequelize: sequelize,
             user: newUser
         }
-        const {mail, password, name} = req.body
+        const {mail, password, name} = req.headers
         if(mail == "" || password == "" || name == ""){
             return req.status(400).json({message: "Проверьте правильность заполнения полей!"})
         }
@@ -46,7 +46,7 @@ module.exports.login = async (req, res, next) => {
             sequelize: sequelize,
             user: newUser
         }
-        const {mail, password} = req.body
+        const {mail, password} = req.headers
         //Вставить валидатор
         // console.log(validateMail(mail))
         //*******
@@ -72,5 +72,5 @@ module.exports.login = async (req, res, next) => {
 function getToken(id) {
     return jwt.sign({id},
         process.env.SECRET_KEY,
-        {expiresIn: "72h"})
+        {expiresIn: "96h"})
 }
