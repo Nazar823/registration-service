@@ -1,5 +1,4 @@
 # Project exclude paths
 /node_modules/
-connection.js
-config/config.env
 config
+.env
