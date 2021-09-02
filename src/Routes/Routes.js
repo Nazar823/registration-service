@@ -1,10 +1,10 @@
 const Router = require('express')
 const router = new Router
 const {
-    registrationSeq, loginSeq
+    registration, loginSeq
 } =  require('../Controllers/authController')
 
 router.post('/api/login', loginSeq)
-router.post('/api/reg', registrationSeq)
+router.post('/api/reg', registration)
 
 module.exports = router

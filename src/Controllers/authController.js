@@ -1,12 +1,10 @@
 const bcrypt = require('bcryptjs')
-const {use} = require("express/lib/router");
 const jwt = require("jsonwebtoken");
-const {Client} = require("pg")
 const {Sequelize, DataTypes, Model} = require('sequelize')
 
 //*********Sequelize*********
 
-module.exports.registrationSeq = async (req, res, next) => {
+module.exports.registration = async (req, res, next) => {
     try {
         const sequelize = new Sequelize('users_auth', 'nazar', 'ignatenko123', {
             dialect: "postgres",
@@ -43,12 +41,16 @@ module.exports.loginSeq = async (req, res, next) => {
             dialect: "postgres",
             host: 'localhost'
         })
+        console.log('connected')
         const newUser = require('../../models/user')(sequelize)
         module.exports = {
             sequelize: sequelize,
             user: newUser
         }
         const {mail, password} = req.body
+        //Вставить валидатор
+
+        //*******
         const user = await newUser.findOne({
             attributes: ['id', 'password'],
             where: {
