@@ -5,7 +5,7 @@
 * MY_PORT = your_port
 * SECRET_KEY = your_key
 
-//Connecting to DB
+Подключение к БД
 * DB_USER = your_user
 * DB_NAME = your_db_name
 * DB_PASSWORD = your_db_password
