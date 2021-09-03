@@ -13,7 +13,7 @@ module.exports.registration = async (req, res, next) => {
         if (!validator.isEmail(mail)){
             return res.status(400).json({message: 'Email not valid!'})
         }
-        await db.sequelize.sync({ alter: true})
+        await db.sequelize.sync()
         user.create({
             mail: mail,
             name: name,
@@ -21,7 +21,7 @@ module.exports.registration = async (req, res, next) => {
         }).then(() => {
             return res.status(200).json({message: "Registration successfully"})
         }).catch((e) => {
-            return res.status(500).json({message: e.message})
+            return res.status(400).json({message: e.message})
         })
 
     } catch (e) {
@@ -35,7 +35,7 @@ module.exports.login = async (req, res, next) => {
         if (!validator.isEmail(mail)){
             return res.status(400).json({message: 'Email not valid!'})
         }
-        await db.sequelize.sync({ alter: true})
+        await db.sequelize.sync()
         const findedUser = await user.findOne({
             attributes: ['id', 'password'],
             where: {
