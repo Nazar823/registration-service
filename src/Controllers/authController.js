@@ -57,9 +57,7 @@ module.exports.login = async (req, res, next) => {
 
 module.exports.checkToken = async (req, res, next) => {
     try {
-        const key = process.env.SECRET_KEY
-        console.log('Secret key: ', key)
-        if (jwt.verify(req.headers.authorization, key)) {
+        if (jwt.verify(req.headers.authorization, process.env.SECRET_KEY)) {
             return res.status(400).json({message: "Authorization successfully"})
         } else {
             return res.status(400).json({message: "Authorization failed!"})
