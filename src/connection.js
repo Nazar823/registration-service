@@ -8,8 +8,7 @@ const sequelize = new Sequelize(
         host: process.env.HOST
     }
 )
-const user = require('./user')(sequelize)
-console.log('Подключение через модуль')
+const user = require('../models/user')(sequelize)
 module.exports = {
     sequelize: sequelize,
     user: user
