@@ -2,28 +2,19 @@ const validator = require('validator');
 const bcrypt = require('bcryptjs')
 const jwt = require("jsonwebtoken");
 const {Sequelize, DataTypes, Model} = require('sequelize')
-
+const db = require('../../db')
+const user = db.user
 
 module.exports.registration = async (req, res, next) => {
     try {
-        const sequelize = new Sequelize('users_auth', 'nazar', 'ignatenko123', {
-            dialect: "postgres",
-            host: 'localhost'
-        })
-        const newUser = require('../../models/user')(sequelize)
-        module.exports = {
-            sequelize: sequelize,
-            user: newUser
-        }
         const {mail, password, name} = req.headers
         if(mail == "" || password == "" || name == ""){
             return req.status(400).json({message: "Проверьте правильность заполнения полей!"})
         }
-        //Вставить валидатор
         if (!validator.isEmail(mail)){
             return res.status(400).json({message: 'Почта не валидна!'})
         }
-        newUser.create({
+        user.create({
             mail: mail,
             name: name,
             password: bcrypt.hashSync(password, 8)
@@ -40,33 +31,23 @@ module.exports.registration = async (req, res, next) => {
 
 module.exports.login = async (req, res, next) => {
     try {
-        const sequelize = new Sequelize('users_auth', 'nazar', 'ignatenko123', {
-            dialect: "postgres",
-            host: 'localhost'
-        })
-        const newUser = require('../../models/user')(sequelize)
-        module.exports = {
-            sequelize: sequelize,
-            user: newUser
-        }
         const {mail, password} = req.headers
-        //Вставить валидатор
         if (!validator.isEmail(mail)){
             return res.status(400).json({message: 'Почта не валидна!'})
         }
-        const user = await newUser.findOne({
+        const findedUser = await user.findOne({
             attributes: ['id', 'password'],
             where: {
                 mail: mail
             }
         })
-        if (user === null){
+        if (findedUser === null){
             return res.status(400).json({message: 'Пользователь не найден!'})
         }
-        if (!bcrypt.compareSync(password, user.password)){
+        if (!bcrypt.compareSync(password, findedUser.password)){
             return res.status(400).json({message: "Пароль неправильный"})
         }
-        return res.status(200).json({token: getToken(user.id)})
+        return res.status(200).json({token: getToken(findedUser.id)})
     } catch (e){
         console.log(e.message)
         return res.status(400).json({message: e.message})
