@@ -8,7 +8,7 @@ const sequelize = new Sequelize(
         host: process.env.HOST
     }
 )
-const user = require('../models/user')(sequelize)
+const user = require('./models/user')(sequelize)
 module.exports = {
     sequelize: sequelize,
     user: user
