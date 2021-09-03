@@ -6,7 +6,7 @@ const user = db.user
 
 module.exports.registration = async (req, res, next) => {
     try {
-        const {mail, password, name} = req.headers
+        const {mail, password, name} = req.body
         if(mail == "" || password == "" || name == ""){
             return req.status(400).json({message: "Check the correctness of filling in the fields!"})
         }
@@ -31,7 +31,7 @@ module.exports.registration = async (req, res, next) => {
 
 module.exports.login = async (req, res, next) => {
     try {
-        const {mail, password} = req.headers
+        const {mail, password} = req.body
         if (!validator.isEmail(mail)){
             return res.status(400).json({message: 'Email not valid!'})
         }
@@ -58,7 +58,7 @@ module.exports.login = async (req, res, next) => {
 module.exports.checkToken = async (req, res, next) => {
     try {
         if (jwt.verify(req.headers.authorization, process.env.SECRET_KEY)) {
-            return res.status(400).json({message: "Authorization successfully"})
+            return res.status(200).json({message: "Authorization successfully"})
         } else {
             return res.status(400).json({message: "Authorization failed!"})
         }
