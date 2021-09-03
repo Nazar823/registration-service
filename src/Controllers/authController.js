@@ -1,8 +1,7 @@
 const validator = require('validator');
 const bcrypt = require('bcryptjs')
 const jwt = require("jsonwebtoken");
-const {Sequelize, DataTypes, Model} = require('sequelize')
-const db = require('../../db')
+const db = require('../connection')
 const user = db.user
 
 module.exports.registration = async (req, res, next) => {
@@ -14,6 +13,7 @@ module.exports.registration = async (req, res, next) => {
         if (!validator.isEmail(mail)){
             return res.status(400).json({message: 'Почта не валидна!'})
         }
+        await db.sequelize.sync({ alter: true})
         user.create({
             mail: mail,
             name: name,
@@ -35,6 +35,7 @@ module.exports.login = async (req, res, next) => {
         if (!validator.isEmail(mail)){
             return res.status(400).json({message: 'Почта не валидна!'})
         }
+        await db.sequelize.sync({ alter: true})
         const findedUser = await user.findOne({
             attributes: ['id', 'password'],
             where: {
