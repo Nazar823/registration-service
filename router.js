@@ -3,7 +3,7 @@ const router = express.Router()
 const {body, validationResult} = require('express-validator')
 const {
     registration, login, checkToken
-} =  require('../controllers/authController')
+} =  require('./controllers/authController')
 
 router.post('/api/login',
         body('email')
