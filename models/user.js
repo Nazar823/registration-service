@@ -8,7 +8,7 @@ module.exports = function (sequelize){
             primaryKey: true,
             allowNull: false
         },
-        mail: {
+        email: {
             type: Sequelize.TEXT,
             allowNull: false,
             unique: true

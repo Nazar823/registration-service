@@ -1,56 +1,57 @@
 const bcrypt = require('bcryptjs')
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken')
 const db = require('../connection')
 const user = db.user
+const statusOK = {code: 200, description: 'Successfully'}
+const statusErr = {code: 200, description: 'Client error'}
 
-module.exports.registration = async (req, res, next) => {
+module.exports.registration = async (req, res) => {
     try {
-        const {mail, password, name} = req.body
+        const {email, password, name} = req.body
         await db.sequelize.sync()
         user.create({
-            mail: mail,
+            email: email,
             name: name,
             password: bcrypt.hashSync(password, 8)
         }).then(() => {
-            return res.status(200).json({message: "Registration successfully"})
+            return res.status(statusOK.code).json({message: 'Registration successfully'})
         }).catch((e) => {
-            return res.status(400).json({message: e.message})
+            return res.status(statusErr.code).json({message: e.message})
         })
 
     } catch (e) {
-        return res.status(400).json({message: e.message})
+        return res.status(statusErr.code).json({message: e.message})
     }
 }
 
-module.exports.login = async (req, res, next) => {
+module.exports.login = async (req, res) => {
     try {
-        const {mail, password} = req.body
-        await db.sequelize.sync()
+        const {email, password} = req.body
         const findedUser = await user.findOne({
             attributes: ['id', 'password'],
             where: {
-                mail: mail
+                email: email
             }
         })
         if (findedUser === null){
-            return res.status(400).json({message: 'User not found!'})
+            return res.status(statusErr.code).json({message: 'User not found!'})
         }
         if (!bcrypt.compareSync(password, findedUser.password)){
-            return res.status(400).json({message: "Wrong password!"})
+            return res.status(statusErr.code).json({message: 'Wrong password!'})
         }
-        return res.status(200).json({token: getToken(findedUser.id)})
+        return res.status(statusOK.code).json({token: getToken(findedUser.id)})
     } catch (e){
         console.log(e.message)
-        return res.status(400).json({message: e.message})
+        return res.status(statusErr.code).json({message: e.message})
     }
 }
 
-module.exports.checkToken = async (req, res, next) => {
+module.exports.checkToken = async (req, res) => {
     try {
         if (jwt.verify(req.headers.authorization, process.env.SECRET_KEY)) {
-            return res.status(200).json({message: "Authorization successfully"})
+            return res.status(statusOK.code).json({message: 'Authorization successfully'})
         } else {
-            return res.status(400).json({message: "Authorization failed!"})
+            return res.status(statusErr.code).json({message: 'Authorization failed!'})
         }
     } catch (e){
         console.log(e.message)
@@ -61,5 +62,5 @@ module.exports.checkToken = async (req, res, next) => {
 function getToken(id) {
     return jwt.sign({id},
         process.env.SECRET_KEY,
-        {expiresIn: "96h"})
+        {expiresIn: '96h'})
 }

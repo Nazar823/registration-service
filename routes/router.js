@@ -8,8 +8,8 @@ const {
 router.post('/api/login',
         body('email')
             .isEmail()
-            .withMessage('Email не валиден'),
-        body('password', 'Поле пароля пустое!')
+            .withMessage('Email not valid'),
+        body('password', 'Password field null!')
             .notEmpty(),
     (req, res) => {
     const e = validationResult(req)
@@ -20,13 +20,13 @@ router.post('/api/login',
     })
 
 router.post('/api/registration',
-    body('email', 'Email не валиден')
+    body('email', 'Email not valid')
         .isEmail()
         .normalizeEmail(),
     body('password')
         .isLength({min: 8})
-        .withMessage('Пароль должен быть не меньше 8 символов'),
-    body('name', 'Поле имени пустое!')
+        .withMessage('Password must be at least 8 chars long'),
+    body('name', 'Name field null!')
         .notEmpty(),
 
     (req, res) => {
