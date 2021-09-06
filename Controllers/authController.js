@@ -7,12 +7,6 @@ const user = db.user
 module.exports.registration = async (req, res, next) => {
     try {
         const {mail, password, name} = req.body
-        if(mail == "" || password == "" || name == ""){
-            return req.status(400).json({message: "Check the correctness of filling in the fields!"})
-        }
-        if (!validator.isEmail(mail)){
-            return res.status(400).json({message: 'Email not valid!'})
-        }
         await db.sequelize.sync()
         user.create({
             mail: mail,
@@ -30,11 +24,9 @@ module.exports.registration = async (req, res, next) => {
 }
 
 module.exports.login = async (req, res, next) => {
+    console.log("here")
     try {
         const {mail, password} = req.body
-        if (!validator.isEmail(mail)){
-            return res.status(400).json({message: 'Email not valid!'})
-        }
         await db.sequelize.sync()
         const findedUser = await user.findOne({
             attributes: ['id', 'password'],
