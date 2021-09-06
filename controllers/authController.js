@@ -6,8 +6,6 @@ const user = db.user
 
 module.exports.registration = async (req, res, next) => {
     try {
-        console.log('Получены данные', req.body)
-        console.log('Запрос отправлен в БД')
         const {mail, password, name} = req.body
         await db.sequelize.sync()
         user.create({
@@ -27,8 +25,6 @@ module.exports.registration = async (req, res, next) => {
 
 module.exports.login = async (req, res, next) => {
     try {
-        console.log('Получены данные', req.body)
-        console.log('Запрос отправлен в БД')
         const {mail, password} = req.body
         await db.sequelize.sync()
         const findedUser = await user.findOne({
