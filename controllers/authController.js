@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const db = require('../connection')
+const {verify} = require("jsonwebtoken");
 const user = db.user
 const statusOK = {code: 200, description: 'Successfully'}
 const statusErr = {code: 200, description: 'Client error'}
@@ -48,6 +49,16 @@ module.exports.login = async (req, res) => {
 
 module.exports.checkToken = async (req, res) => {
     try {
+        const secretKey = process.env.SECRET_KEY
+        const token = req.headers.authorization
+        const decodeId = jwt.verify(token, secretKey)
+        console.log(decodeId.id, typeof decodeId.id)
+        const findedUser = await user.findOne({
+            attributes: ['id', 'password'],
+            where: {
+                id: decodeId
+            }
+        })
         if (jwt.verify(req.headers.authorization, process.env.SECRET_KEY)) {
             return res.status(statusOK.code).json({message: 'Authorization successfully'})
         } else {
