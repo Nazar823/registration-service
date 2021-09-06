@@ -11,7 +11,7 @@ router.post('/api/login',
             .withMessage('Email not valid'),
         body('password', 'Password field null!')
             .notEmpty(),
-    (req, res) => {
+    function (req, res) {
     const e = validationResult(req)
     if (!e.isEmpty()){
         return res.status(400).json({errors: e.array()})
@@ -29,7 +29,7 @@ router.post('/api/registration',
     body('name', 'Name field null!')
         .notEmpty(),
 
-    (req, res) => {
+    function (req, res) {
         const e = validationResult(req)
         if (!e.isEmpty()){
             return res.status(400).json({errors: e.array()})
