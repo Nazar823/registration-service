@@ -1,29 +1,41 @@
-const Router = require('express')
-const router = new Router
-const {check} = require('express-validator')
+const express = require('express')
+const router = express.Router()
+const {body, validationResult} = require('express-validator')
 const {
     registration, login, checkToken
-} =  require('../Controllers/authController')
+} =  require('../controllers/authController')
 
 router.post('/api/login',
-    check('mail')
-        .isEmail().normalizeEmail()
-        .withMessage('Почта указана неправильно')
-        .notEmpty(),
-    check('password', )
-        .notEmpty({ignore_whitespace: true})
-        .withMessage('не должно быть пробелов в пароле'),
-    login)
+        body('email')
+            .isEmail()
+            .withMessage('Email не валиден'),
+        body('password', 'Поле пароля пустое!')
+            .notEmpty(),
+    (req, res) => {
+    const e = validationResult(req)
+    if (!e.isEmpty()){
+        return res.status(400).json({errors: e.array()})
+    }
+    return login(req, res)
+    })
+
 router.post('/api/registration',
-    check('mail', 'Почта указана неправильно')
+    body('email', 'Email не валиден')
         .isEmail()
         .normalizeEmail(),
-    check('password', 'Поле пароля пустое!')
-        .notEmpty({ignore_whitespace: true})
-        .withMessage('не должно быть пробелов в пароле'),
-    check('name', 'Поле имени пустое!')
-        .notEmpty({ignore_whitespace: true}),
-    registration)
+    body('password')
+        .isLength({min: 8})
+        .withMessage('Пароль должен быть не меньше 8 символов'),
+    body('name', 'Поле имени пустое!')
+        .notEmpty(),
+
+    (req, res) => {
+        const e = validationResult(req)
+        if (!e.isEmpty()){
+            return res.status(400).json({errors: e.array()})
+        }
+        return registration(req, res)
+    })
 router.post('/api/authorization', checkToken)
 
 module.exports = router
