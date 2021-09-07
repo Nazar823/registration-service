@@ -12,11 +12,11 @@ router.post('/api/login',
         body('password', 'Password field null!')
             .notEmpty(),
     function (req, res) {
-    const e = validationResult(req)
-    if (!e.isEmpty()){
-        return res.status(400).json({errors: e.array()})
-    }
-    return login(req, res)
+        const e = validationResult(req)
+        if (!e.isEmpty()){
+            return res.status(400).json({errors: e.array()})
+        }
+        return login(req, res)
     })
 
 router.post('/api/registration',

@@ -2,20 +2,19 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const db = require('../connection')
 const user = db.user
-const statusOK = {code: 200, description: 'Successfully'}
-const statusErr = {code: 200, description: 'Client error'}
+const statusOK = {code: 200, description: 'OK'}
+const statusErr = {code: 400, description: 'Bad Request'}
 
 module.exports.registration = async (req, res) => {
     try {
         const {email, password, name} = req.body
-        await db.sequelize.sync()
         user.create({
             email: email,
             name: name,
             password: bcrypt.hashSync(password, 8)
-        }).then(() => {
-            return res.status(statusOK.code).json({message: 'Registration successfully'})
-        }).catch((e) => {
+        })
+        return res.status(statusOK.code).json({message: 'Registration successfully'})
+        .catch((e) => {
             return res.status(statusErr.code).json({message: e.message})
         })
 
