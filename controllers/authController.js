@@ -23,10 +23,6 @@ module.exports.registration = async (req, res) => {
             password: bcrypt.hashSync(password, 8)
         })
         return res.status(statusOK.code).json({message: 'Registration successfully'})
-        .catch((e) => {
-            return res.status(statusErr.code).json({message: e.message})
-        })
-
     } catch (e) {
         return res.status(statusErr.code).json({message: e.message})
     }
