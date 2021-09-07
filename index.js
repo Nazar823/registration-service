@@ -4,7 +4,7 @@ const cors = require('cors')
 const PORT = process.env.MY_PORT
 const apiRoutes = require('./router')
 const bodyParser = require('body-parser')
-const {sequelize} = require("./connection");
+const {sequelize} = require('./connection');
 const app = express()
 app.use(bodyParser.json())
 app.use(cors())
