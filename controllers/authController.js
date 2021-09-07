@@ -2,6 +2,7 @@ const bcrypt = require('bcryptjs')
 const jwt = require('jsonwebtoken')
 const db = require('../connection')
 const {verify} = require("jsonwebtoken");
+const {stringify} = require("nodemon/lib/utils");
 const user = db.user
 const statusOK = {code: 200, description: 'Successfully'}
 const statusErr = {code: 200, description: 'Client error'}
@@ -56,13 +57,13 @@ module.exports.checkToken = async (req, res) => {
         const findedUser = await user.findOne({
             attributes: ['id', 'password'],
             where: {
-                id: decodeId
+                id: decodeId.id
             }
         })
-        if (jwt.verify(req.headers.authorization, process.env.SECRET_KEY)) {
-            return res.status(statusOK.code).json({message: 'Authorization successfully'})
+        if (findedUser === null){
+            return res.status(statusOK.code).json({message: 'Authorization failed'})
         } else {
-            return res.status(statusErr.code).json({message: 'Authorization failed!'})
+            return res.status(statusErr.code).json({message: 'Authorization successfully!'})
         }
     } catch (e){
         console.log(e.message)
