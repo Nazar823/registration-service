@@ -8,11 +8,21 @@ const statusErr = {code: 400, description: 'Bad Request'}
 module.exports.registration = async (req, res) => {
     try {
         const {email, password, name} = req.body
+        const findedUser = await user.findOne({
+            attributes: ['id'],
+            where: {
+                email: email
+            }
+        })
+        if (findedUser !== null){
+            return res.status(statusErr.code).json({message: 'This email is already registered!'})
+        }
         user.create({
             email: email,
             name: name,
             password: bcrypt.hashSync(password, 8)
         })
+        console.log('Записан зашифрованный пароль', password, ' => ',bcrypt.hashSync(password, 8))
         return res.status(statusOK.code).json({message: 'Registration successfully'})
         .catch((e) => {
             return res.status(statusErr.code).json({message: e.message})
@@ -35,7 +45,11 @@ module.exports.login = async (req, res) => {
         if (findedUser === null){
             return res.status(statusErr.code).json({message: 'User not found!'})
         }
-        if (!bcrypt.compareSync(password, findedUser.password)){
+        console.log('Finded user ID: ', findedUser.id)
+        console.log('Finded user pass: ', findedUser.password)
+        const validPass = bcrypt.compareSync(password, findedUser.password)
+        console.log('Пароли совпадают: ', validPass)
+        if (!validPass){
             return res.status(statusErr.code).json({message: 'Wrong password!'})
         }
         return res.status(statusOK.code).json({token: getToken(findedUser.id)})
@@ -51,15 +65,15 @@ module.exports.checkToken = async (req, res) => {
         const token = req.headers.authorization
         const decodeId = jwt.verify(token, secretKey)
         const findedUser = await user.findOne({
-            attributes: ['id', 'password'],
+            attributes: ['id'],
             where: {
                 id: decodeId.id
             }
         })
         if (findedUser === null){
-            return res.status(statusOK.code).json({message: 'Authorization failed'})
+            return res.status(statusErr.code).json({message: 'Authorization failed', id: null})
         } else {
-            return res.status(statusErr.code).json({message: 'Authorization successfully!'})
+            return res.status(statusOK.code).json({message: 'Authorization successfully!', id: decodeId})
         }
     } catch (e){
         console.log(e.message)
