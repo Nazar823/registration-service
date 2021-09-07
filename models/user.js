@@ -9,16 +9,16 @@ module.exports = function (sequelize){
             allowNull: false
         },
         email: {
-            type: Sequelize.CHAR,
+            type: Sequelize.STRING,
             allowNull: false,
             unique: true
         },
         name: {
-            type: Sequelize.CHAR,
+            type: Sequelize.STRING,
             allowNull: false
         },
         password: {
-            type: Sequelize.CHAR,
+            type: Sequelize.STRING,
             allowNull: false
         }
     }, {

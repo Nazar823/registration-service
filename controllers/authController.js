@@ -22,7 +22,6 @@ module.exports.registration = async (req, res) => {
             name: name,
             password: bcrypt.hashSync(password, 8)
         })
-        console.log('Записан зашифрованный пароль', password, ' => ',bcrypt.hashSync(password, 8))
         return res.status(statusOK.code).json({message: 'Registration successfully'})
         .catch((e) => {
             return res.status(statusErr.code).json({message: e.message})
@@ -45,10 +44,7 @@ module.exports.login = async (req, res) => {
         if (findedUser === null){
             return res.status(statusErr.code).json({message: 'User not found!'})
         }
-        console.log('Finded user ID: ', findedUser.id)
-        console.log('Finded user pass: ', findedUser.password)
         const validPass = bcrypt.compareSync(password, findedUser.password)
-        console.log('Пароли совпадают: ', validPass)
         if (!validPass){
             return res.status(statusErr.code).json({message: 'Wrong password!'})
         }
@@ -73,7 +69,7 @@ module.exports.checkToken = async (req, res) => {
         if (findedUser === null){
             return res.status(statusErr.code).json({message: 'Authorization failed', id: null})
         } else {
-            return res.status(statusOK.code).json({message: 'Authorization successfully!', id: decodeId})
+            return res.status(statusOK.code).json({message: 'Authorization successfully!', id: decodeId.id})
         }
     } catch (e){
         console.log(e.message)
