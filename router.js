@@ -1,6 +1,7 @@
 const express = require('express')
 const router = express.Router()
-const {body, validationResult} = require('express-validator')
+const statusErr = {code: 400, description: 'Bad Request'}
+const {body, header, validationResult} = require('express-validator')
 const {
     registration, login, checkToken, getUserName
 } =  require('./controllers/authController')
@@ -14,7 +15,7 @@ router.post('/api/login',
     function (req, res) {
         const e = validationResult(req)
         if (!e.isEmpty()){
-            return res.status(400).json({errors: e.array()})
+            return res.status(statusErr.code).json({errors: e.array()})
         }
         return login(req, res)
     })
@@ -32,7 +33,7 @@ router.post('/api/registration',
     function (req, res) {
         const e = validationResult(req)
         if (!e.isEmpty()){
-            return res.status(400).json({errors: e.array()})
+            return res.status(statusErr.code).json({errors: e.array()})
         }
         return registration(req, res)
     })
@@ -43,10 +44,20 @@ router.post('/api/getUserName',
     function (req, res) {
         const e = validationResult(req)
         if (!e.isEmpty()){
-            return res.status(400).json({errors: e.array()})
+            return res.status(statusErr.code).json({errors: e.array()})
         }
         return getUserName(req, res)
     })
-router.post('/api/authorization', checkToken)
+router.post('/api/authorization',
+    header('authorization', 'Authorization field not a JWT!')
+        .isJWT(),
+    function (req, res) {
+        const e = validationResult(req)
+        if (!e.isEmpty()){
+            return res.status(statusErr.code).json({errors: e.array()})
+        }
+        return checkToken(req, res)
+    })
+
 
 module.exports = router
