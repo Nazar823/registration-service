@@ -2,7 +2,7 @@ const express = require('express')
 const router = express.Router()
 const {body, validationResult} = require('express-validator')
 const {
-    registration, login, checkToken
+    registration, login, checkToken, getUserName
 } =  require('./controllers/authController')
 
 router.post('/api/login',
@@ -35,6 +35,17 @@ router.post('/api/registration',
             return res.status(400).json({errors: e.array()})
         }
         return registration(req, res)
+    })
+router.post('/api/getUserName',
+    body('user')
+        .isNumeric()
+        .withMessage('User must be numeric'),
+    function (req, res) {
+        const e = validationResult(req)
+        if (!e.isEmpty()){
+            return res.status(400).json({errors: e.array()})
+        }
+        return getUserName(req, res)
     })
 router.post('/api/authorization', checkToken)
 
