@@ -12,8 +12,9 @@ router.post('/api/login',
             .withMessage('Email not valid'),
         body('password', 'Password field null!')
             .notEmpty(),
+    middleCheckErrors,
     function (req, res) {
-        return checkErrors(req, res, validationResult(req), 'login')
+        return login(req, res)
     })
 
 router.post('/api/registration',
@@ -25,35 +26,33 @@ router.post('/api/registration',
         .withMessage('Password must be at least 8 chars long'),
     body('name', 'Name field null!')
         .notEmpty(),
-
+    middleCheckErrors,
     function (req, res) {
-        return checkErrors(req, res, validationResult(req), 'registration')
+        return registration(req, res)
     })
+
 router.post('/api/getUserName',
     body('user')
         .isNumeric()
         .withMessage('User must be numeric'),
+    middleCheckErrors ,
     function (req, res) {
-        return checkErrors(req, res, validationResult(req), 'getUserName')
+        return getUserName(req, res)
     })
 router.post('/api/authorization',
     header('authorization', 'Authorization field not a JWT!')
         .isJWT(),
+    middleCheckErrors,
     function (req, res) {
-        return checkErrors(req, res, validationResult(req), 'checkToken')
+        return checkToken(req, res)
     })
 
-function checkErrors(req, res, e, nextFunction) {
+function middleCheckErrors(req, res, next){
+    const e = validationResult(req)
     if (!e.isEmpty()){
         return res.status(statusErr.code).json({errors: e.array()})
-    } else {
-        switch (nextFunction){
-            case 'getUserName': return getUserName(req, res)
-            case 'checkToken': return checkToken(req, res)
-            case 'login': return login(req, res)
-            case 'registration': return registration(req, res)
-        }
     }
+    next()
 }
 
 module.exports = router
