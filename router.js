@@ -1,12 +1,13 @@
 const express = require('express')
 const router = express.Router()
 const statusErr = {code: 400, description: 'Bad Request'}
+const statusOK = {code: 200, description: 'OK Request'}
 const {body, header, validationResult} = require('express-validator')
 const {
     registration, login, checkToken, getUserName
 } =  require('./controllers/authController')
 
-router.post('/api/login',
+router.post('/api/auth/login',
         body('email')
             .isEmail()
             .withMessage('Email not valid'),
@@ -17,7 +18,7 @@ router.post('/api/login',
         return login(req, res)
     })
 
-router.post('/api/registration',
+router.post('/api/auth/registration',
     body('email', 'Email not valid')
         .isEmail()
         .normalizeEmail(),
@@ -31,7 +32,7 @@ router.post('/api/registration',
         return registration(req, res)
     })
 
-router.post('/api/getUserName',
+router.post('/api/auth/getUserName',
     body('user')
         .isNumeric()
         .withMessage('User must be numeric'),
@@ -39,7 +40,7 @@ router.post('/api/getUserName',
     function (req, res) {
         return getUserName(req, res)
     })
-router.post('/api/authorization',
+router.post('/api/auth/authorization',
     header('authorization', 'Authorization field not a JWT!')
         .isJWT(),
     middleCheckErrors,
@@ -49,6 +50,7 @@ router.post('/api/authorization',
 
 function middleCheckErrors(req, res, next){
     const errors = validationResult(req)
+    console.log(errors.array())
     if (!errors.isEmpty()){
         return res.status(statusErr.code).json({errors: errors.array()})
     }
