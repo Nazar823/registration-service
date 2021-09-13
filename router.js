@@ -13,11 +13,7 @@ router.post('/api/login',
         body('password', 'Password field null!')
             .notEmpty(),
     function (req, res) {
-        const e = validationResult(req)
-        if (!e.isEmpty()){
-            return res.status(statusErr.code).json({errors: e.array()})
-        }
-        return login(req, res)
+        return checkErrors(req, res, validationResult(req), 'login')
     })
 
 router.post('/api/registration',
@@ -31,33 +27,33 @@ router.post('/api/registration',
         .notEmpty(),
 
     function (req, res) {
-        const e = validationResult(req)
-        if (!e.isEmpty()){
-            return res.status(statusErr.code).json({errors: e.array()})
-        }
-        return registration(req, res)
+        return checkErrors(req, res, validationResult(req), 'registration')
     })
 router.post('/api/getUserName',
     body('user')
         .isNumeric()
         .withMessage('User must be numeric'),
     function (req, res) {
-        const e = validationResult(req)
-        if (!e.isEmpty()){
-            return res.status(statusErr.code).json({errors: e.array()})
-        }
-        return getUserName(req, res)
+        return checkErrors(req, res, validationResult(req), 'getUserName')
     })
 router.post('/api/authorization',
     header('authorization', 'Authorization field not a JWT!')
         .isJWT(),
     function (req, res) {
-        const e = validationResult(req)
-        if (!e.isEmpty()){
-            return res.status(statusErr.code).json({errors: e.array()})
-        }
-        return checkToken(req, res)
+        return checkErrors(req, res, validationResult(req), 'checkToken')
     })
 
+function checkErrors(req, res, e, nextFunction) {
+    if (!e.isEmpty()){
+        return res.status(statusErr.code).json({errors: e.array()})
+    } else {
+        switch (nextFunction){
+            case 'getUserName': return getUserName(req, res)
+            case 'checkToken': return checkToken(req, res)
+            case 'login': return login(req, res)
+            case 'registration': return registration(req, res)
+        }
+    }
+}
 
 module.exports = router
