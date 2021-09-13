@@ -48,9 +48,9 @@ router.post('/api/authorization',
     })
 
 function middleCheckErrors(req, res, next){
-    const e = validationResult(req)
-    if (!e.isEmpty()){
-        return res.status(statusErr.code).json({errors: e.array()})
+    const errors = validationResult(req)
+    if (!errors.isEmpty()){
+        return res.status(statusErr.code).json({errors: errors.array()})
     }
     next()
 }
